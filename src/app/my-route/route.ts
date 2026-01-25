@@ -1,8 +1,10 @@
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 
-export const GET = async (request: Request) => {
-  const payload = await getPayload({
+export const dynamic = 'force-dynamic'
+
+export const GET = async (_request: Request) => {
+  const _payload = await getPayload({
     config: configPromise,
   })
 

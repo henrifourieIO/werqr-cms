@@ -1,12 +1,18 @@
 'use client'
 
+import type { User } from '@/payload-types'
 import { useAuth, useConfig } from '@payloadcms/ui'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import './styles.css'
 
 type Tenant = {
   id: number
   name: string
+}
+
+type UserWithTenants = User & {
+  tenants?: Array<number | Tenant>
+  selectedTenant?: number | Tenant
 }
 
 export const TenantSelector: React.FC = () => {
@@ -15,9 +21,12 @@ export const TenantSelector: React.FC = () => {
   const [tenants, setTenants] = useState<Tenant[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
-  // Get user's tenants and selected tenant from JWT
-  const userTenants = (user as any)?.tenants ?? []
-  const selectedTenant = (user as any)?.selectedTenant
+  // Get user's tenants and selected tenant from JWT (memoized to prevent re-renders)
+  const userTenants = useMemo(
+    () => (user as unknown as UserWithTenants | null)?.tenants ?? [],
+    [user],
+  )
+  const selectedTenant = (user as unknown as UserWithTenants | null)?.selectedTenant
 
   // Get the selected tenant ID (handle both populated and unpopulated)
   const selectedTenantId =
